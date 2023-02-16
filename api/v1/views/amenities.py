@@ -6,8 +6,6 @@ from api.v1.views import app_views
 from flask import abort, jsonify, request, make_response
 from models import storage
 from models.amenity import Amenity
-from models.city import City
-from models.state import State
 
 
 @app_views.route('/amenities/', methods=['GET', 'POST'],
@@ -18,7 +16,7 @@ def amenities_no_id():
         all_amenities = storage.all('Amenity')
         Amenity_List = []
         for obj in all_amenities.values():
-            Amenity_List.append(obj)
+            Amenity_List.append(obj.to_dict())
         return jsonify(Amenity_List)
 
     if request.method == 'POST':
