@@ -41,8 +41,8 @@ def places_per_city(city_id=None):
         if "name" not in req_json.keys():
             abort(400, 'Missing name')
 
-        req_json.city_id = city_id
         new_Place = Place(**req_json)
+        new_Place.city_id = city_id
         storage.new(new_Place)
         new_Place.save()
         storage.close()
