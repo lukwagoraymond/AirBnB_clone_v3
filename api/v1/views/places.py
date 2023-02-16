@@ -4,20 +4,17 @@ Flask route that returns json status response
 """
 from api.v1.views import app_views
 from flask import abort, jsonify, request
-from flasgger.utils import swag_from
-from models import storage, CNC
+from models import storage
 from os import environ
+from models.place import Place
 STORAGE_TYPE = environ.get('HBNB_TYPE_STORAGE')
 
 
-@swag_from('swagger_yaml/places_by_city.yml', methods=['GET', 'POST'])
 @app_views.route('/cities/<city_id>/places', methods=['GET', 'POST'])
 def places_per_city(city_id=None):
-    """
-        places route to handle http method for requested places by city
-    """
+    """Endpoint to handle http method for requested places by city"""
     city_obj = storage.get('City', city_id)
-    if city_obj is None:
+    if not city_obj:
         abort(404, 'Not found')
 
     if request.method == 'GET':
@@ -28,47 +25,52 @@ def places_per_city(city_id=None):
 
     if request.method == 'POST':
         req_json = request.get_json()
-        if req_json is None:
+        if not req_json:
             abort(400, 'Not a JSON')
-        user_id = req_json.get("user_id")
-        if user_id is None:
+        if "user_id" not in req_json:
             abort(400, 'Missing user_id')
+
+        user_id = req_json.get('user_id')
         user_obj = storage.get('User', user_id)
         if user_obj is None:
             abort(404, 'Not found')
-        if req_json.get("name") is None:
+        if "name" not in req_json:
             abort(400, 'Missing name')
-        Place = CNC.get("Place")
-        req_json['city_id'] = city_id
-        new_object = Place(**req_json)
-        new_object.save()
-        return jsonify(new_object.to_json()), 201
+        new_Place = Place(**req_json)
+        new_Place['city_id'] = city_id
+        storage.new(new_Place)
+        new_Place.save()
+        storage.close()
+        return jsonify(new_Place.to_dict()), 201
 
 
-@swag_from('swagger_yaml/places_id.yml', methods=['GET', 'DELETE', 'PUT'])
 @app_views.route('/places/<place_id>', methods=['GET', 'DELETE', 'PUT'])
 def places_with_id(place_id=None):
-    """
-        places route to handle http methods for given place
-    """
+    """Endpoint to handle http methods for given place"""
     place_obj = storage.get('Place', place_id)
-    if place_obj is None:
+    if not place_obj:
         abort(404, 'Not found')
 
     if request.method == 'GET':
-        return jsonify(place_obj.to_json())
+        return jsonify(place_obj.to_dict())
 
     if request.method == 'DELETE':
         place_obj.delete()
-        del place_obj
+        storage.save()
+        storage.close()
         return jsonify({}), 200
 
     if request.method == 'PUT':
+        ignore_keys = ['id', 'created_at', 'updated_at', 'city_id', 'user_id']
         req_json = request.get_json()
         if req_json is None:
             abort(400, 'Not a JSON')
-        place_obj.bm_update(req_json)
-        return jsonify(place_obj.to_json()), 200
+        for key, val in req_json.items():
+            if key not in ignore_keys:
+                setattr(place_obj, key, val)
+        place_obj.save()
+        storage.close()
+        return jsonify(place_obj.to_dict()), 200
 
 
 @app_views.route('/places_search', methods=['POST'])

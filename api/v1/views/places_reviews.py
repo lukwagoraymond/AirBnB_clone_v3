@@ -4,16 +4,13 @@ Flask route that returns json status response
 """
 from api.v1.views import app_views
 from flask import abort, jsonify, request
-from flasgger.utils import swag_from
-from models import storage, CNC
+from models import storage
+from models.review import Review
 
 
 @app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'])
-@swag_from('swagger_yaml/reviews_by_place.yml', methods=['GET', 'POST'])
 def reviews_per_place(place_id=None):
-    """
-        reviews route to handle http method for requested reviews by place
-    """
+    """Endpoint to handle http method for requested reviews by place"""
     place_obj = storage.get('Place', place_id)
 
     if request.method == 'GET':
@@ -38,19 +35,17 @@ def reviews_per_place(place_id=None):
             abort(404, 'Not found')
         if req_json.get('text') is None:
             abort(400, 'Missing text')
-        Review = CNC.get("Review")
-        req_json['place_id'] = place_id
-        new_object = Review(**req_json)
-        new_object.save()
-        return jsonify(new_object.to_json()), 201
+        new_Review = Review(**req_json)
+        new_Review['place_id'] = place_id
+        storage.new(new_Review)
+        new_Review.save()
+        storage.close()
+        return jsonify(new_Review.to_dict()), 201
 
 
 @app_views.route('/reviews/<review_id>', methods=['GET', 'DELETE', 'PUT'])
-@swag_from('swagger_yaml/reviews_id.yml', methods=['GET', 'DELETE', 'PUT'])
 def reviews_with_id(review_id=None):
-    """
-        reviews route to handle http methods for given review by ID
-    """
+    """Endpoint to handle http methods for given review by ID"""
     review_obj = storage.get('Review', review_id)
 
     if request.method == 'GET':
@@ -62,14 +57,20 @@ def reviews_with_id(review_id=None):
         if review_obj is None:
             abort(404, 'Not found')
         review_obj.delete()
-        del review_obj
+        storage.save()
+        storage.close()
         return jsonify({}), 200
 
     if request.method == 'PUT':
         if review_obj is None:
             abort(404, 'Not found')
+        ignore_keys = ['id', 'created_at', 'updated_at', 'city_id', 'user_id']
         req_json = request.get_json()
         if req_json is None:
             abort(400, 'Not a JSON')
-        review_obj.bm_update(req_json)
-        return jsonify(review_obj.to_json()), 200
+        for key, val in req_json.items():
+            if key not in ignore_keys:
+                setattr(review_obj, key, val)
+        review_obj.save()
+        storage.close()
+        return jsonify(review_obj.to_dict()), 200
