@@ -10,7 +10,8 @@ from models.place import Place
 STORAGE_TYPE = environ.get('HBNB_TYPE_STORAGE')
 
 
-@app_views.route('/cities/<city_id>/places', methods=['GET', 'POST'])
+@app_views.route('/cities/<city_id>/places', methods=['GET', 'POST'],
+                 strict_slashes=False)
 def places_per_city(city_id=None):
     """Endpoint to handle http method for requested places by city"""
     city_obj = storage.get('City', city_id)
@@ -37,14 +38,15 @@ def places_per_city(city_id=None):
         if "name" not in req_json:
             abort(400, 'Missing name')
         new_Place = Place(**req_json)
-        new_Place['city_id'] = city_id
+        new_Place.city_id = city_id
         storage.new(new_Place)
         new_Place.save()
         storage.close()
         return jsonify(new_Place.to_dict()), 201
 
 
-@app_views.route('/places/<place_id>', methods=['GET', 'DELETE', 'PUT'])
+@app_views.route('/places/<place_id>', methods=['GET', 'DELETE', 'PUT'],
+                 strict_slashes=False)
 def places_with_id(place_id=None):
     """Endpoint to handle http methods for given place"""
     place_obj = storage.get('Place', place_id)
@@ -73,7 +75,7 @@ def places_with_id(place_id=None):
         return jsonify(place_obj.to_dict()), 200
 
 
-@app_views.route('/places_search', methods=['POST'])
+@app_views.route('/places_search', methods=['POST'], strict_slashes=False)
 def places_search():
     """
         places route to handle http method for request to search places

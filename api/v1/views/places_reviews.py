@@ -8,7 +8,8 @@ from models import storage
 from models.review import Review
 
 
-@app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'])
+@app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'],
+                 strict_slashes=False)
 def reviews_per_place(place_id=None):
     """Endpoint to handle http method for requested reviews by place"""
     place_obj = storage.get('Place', place_id)
@@ -36,14 +37,15 @@ def reviews_per_place(place_id=None):
         if req_json.get('text') is None:
             abort(400, 'Missing text')
         new_Review = Review(**req_json)
-        new_Review['place_id'] = place_id
+        new_Review.place_id = place_id
         storage.new(new_Review)
         new_Review.save()
         storage.close()
         return jsonify(new_Review.to_dict()), 201
 
 
-@app_views.route('/reviews/<review_id>', methods=['GET', 'DELETE', 'PUT'])
+@app_views.route('/reviews/<review_id>', methods=['GET', 'DELETE', 'PUT'],
+                 strict_slashes=False)
 def reviews_with_id(review_id=None):
     """Endpoint to handle http methods for given review by ID"""
     review_obj = storage.get('Review', review_id)

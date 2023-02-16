@@ -9,7 +9,8 @@ from models.state import State
 from models.city import City
 
 
-@app_views.route('/states/<state_id>/cities', methods=['GET', 'POST'], strict_slashes=False)
+@app_views.route('/states/<state_id>/cities', methods=['GET', 'POST'],
+                 strict_slashes=False)
 def cities_per_state(state_id=None):
     """Cities endpoint handling methods for cities by state"""
     state_obj = storage.get('State', state_id)
@@ -40,7 +41,8 @@ def cities_per_state(state_id=None):
             return make_response(json_data, 201)
 
 
-@app_views.route('/cities/<city_id>', methods=['GET', 'DELETE', 'PUT'], strict_slashes=False)
+@app_views.route('/cities/<city_id>', methods=['GET', 'DELETE', 'PUT'],
+                 strict_slashes=False)
 def cities_with_id(city_id=None):
     """Endpoint to handle methods based on a city id"""
     city_obj = storage.get('City', city_id)

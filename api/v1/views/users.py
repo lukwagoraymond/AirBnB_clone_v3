@@ -8,7 +8,7 @@ from models import storage
 from models.user import User
 
 
-@app_views.route('/users/', methods=['GET', 'POST'])
+@app_views.route('/users/', methods=['GET', 'POST'], strict_slashes=False)
 def users_no_id():
     """Endpoint that handles http requests with no ID given"""
 
@@ -35,7 +35,8 @@ def users_no_id():
             return jsonify(new_User.to_dict()), 201
 
 
-@app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'])
+@app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'],
+                 strict_slashes=False)
 def user_with_id(user_id=None):
     """Endpoint that handles http requests with ID given"""
     user_obj = storage.get('User', user_id)

@@ -29,7 +29,8 @@ def states_no_id():
             return make_response(json_data, 201)
 
 
-@app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
+@app_views.route('/states/<state_id>', methods=['GET', 'PUT', 'DELETE'],
+                 strict_slashes=False)
 def states_with_id(state_id=None):
     """Endpoint to handle http methods with state id"""
     state_obj = storage.get('State', state_id)

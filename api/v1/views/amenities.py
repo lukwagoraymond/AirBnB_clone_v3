@@ -8,7 +8,8 @@ from models import storage
 from models.amenity import Amenity
 
 
-@app_views.route('/amenities/', methods=['GET', 'POST'])
+@app_views.route('/amenities/', methods=['GET', 'POST'],
+                 strict_slashes=False)
 def amenities_no_id():
     """Endpoint that handles http requests for no ID given"""
     if request.method == 'GET':
@@ -31,7 +32,8 @@ def amenities_no_id():
             return jsonify(new_amenity.to_dict()), 201
 
 
-@app_views.route('/amenities/<amenity_id>', methods=['GET', 'DELETE', 'PUT'])
+@app_views.route('/amenities/<amenity_id>', methods=['GET', 'DELETE', 'PUT'],
+                 strict_slashes=False)
 def amenities_with_id(amenity_id=None):
     """amenities route that handles http requests with ID given"""
     amenity_obj = storage.get('Amenity', amenity_id)
