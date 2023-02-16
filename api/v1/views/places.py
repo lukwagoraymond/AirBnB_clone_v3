@@ -20,23 +20,25 @@ def places_per_city(city_id=None):
 
     if request.method == 'GET':
         all_places = storage.all('Place')
-        city_places = [obj.to_json() for obj in all_places.values()
+        city_places = [obj.to_dict() for obj in all_places.values()
                        if obj.city_id == city_id]
         return jsonify(city_places)
 
     if request.method == 'POST':
         req_json = request.get_json()
+        user_id = req_json.get('user_id')
+        user_obj = storage.get('User', user_id)
+
         if not req_json:
             abort(400, 'Not a JSON')
         if "user_id" not in req_json:
             abort(400, 'Missing user_id')
 
-        user_id = req_json.get('user_id')
-        user_obj = storage.get('User', user_id)
-        if user_obj is None:
+        if not user_obj:
             abort(404, 'Not found')
         if "name" not in req_json:
             abort(400, 'Missing name')
+
         new_Place = Place(**req_json)
         new_Place.city_id = city_id
         storage.new(new_Place)
@@ -65,7 +67,7 @@ def places_with_id(place_id=None):
     if request.method == 'PUT':
         ignore_keys = ['id', 'created_at', 'updated_at', 'city_id', 'user_id']
         req_json = request.get_json()
-        if req_json is None:
+        if not req_json:
             abort(400, 'Not a JSON')
         for key, val in req_json.items():
             if key not in ignore_keys:
@@ -75,11 +77,11 @@ def places_with_id(place_id=None):
         return jsonify(place_obj.to_dict()), 200
 
 
-@app_views.route('/places_search', methods=['POST'], strict_slashes=False)
+"""@app_views.route('/places_search', methods=['POST'], strict_slashes=False)
 def places_search():
-    """
+    \"""
         places route to handle http method for request to search places
-    """
+    \"""
     all_places = [p for p in storage.all('Place').values()]
     req_json = request.get_json()
     if req_json is None:
@@ -116,5 +118,5 @@ def places_search():
                 places_amenities.append(p)
     else:
         places_amenities = all_places
-    result = [place.to_json() for place in places_amenities]
-    return jsonify(result)
+    result = [place.to_dict() for place in places_amenities]
+    return jsonify(result)"""
