@@ -33,16 +33,16 @@ def places_per_city(city_id=None):
 
         if not req_json:
             abort(400, 'Not a JSON')
-        if "user_id" not in req_json:
+        if not user_id:
             abort(400, 'Missing user_id')
 
         if not user_obj:
             abort(404, 'Not found')
-        if "name" not in req_json:
+        if "name" not in req_json.keys():
             abort(400, 'Missing name')
 
+        req_json.city_id = city_id
         new_Place = Place(**req_json)
-        new_Place.city_id = city_id
         storage.new(new_Place)
         new_Place.save()
         storage.close()
