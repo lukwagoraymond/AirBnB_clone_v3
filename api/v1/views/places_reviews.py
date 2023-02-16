@@ -18,7 +18,7 @@ def reviews_per_place(place_id=None):
         if place_obj is None:
             abort(404, 'Not found')
         all_reviews = storage.all('Review')
-        place_reviews = [obj.to_json() for obj in all_reviews.values()
+        place_reviews = [obj.to_dict() for obj in all_reviews.values()
                          if obj.place_id == place_id]
         return jsonify(place_reviews)
 
