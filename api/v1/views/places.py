@@ -77,11 +77,11 @@ def places_with_id(place_id=None):
         return jsonify(place_obj.to_dict()), 200
 
 
-"""@app_views.route('/places_search', methods=['POST'], strict_slashes=False)
+@app_views.route('/places_search', methods=['POST'], strict_slashes=False)
 def places_search():
-    \"""
+    """
         places route to handle http method for request to search places
-    \"""
+    """
     all_places = [p for p in storage.all('Place').values()]
     req_json = request.get_json()
     if req_json is None:
@@ -119,4 +119,4 @@ def places_search():
     else:
         places_amenities = all_places
     result = [place.to_dict() for place in places_amenities]
-    return jsonify(result)"""
+    return jsonify(result)
