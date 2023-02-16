@@ -44,7 +44,7 @@ def user_with_id(user_id=None):
         abort(404, 'Not found')
 
     if request.method == 'GET':
-        return jsonify(user_obj.to_json())
+        return jsonify(user_obj.to_dict())
 
     if request.method == 'DELETE':
         user_obj.delete()
