@@ -20,9 +20,11 @@ def places_per_city(city_id=None):
 
     if request.method == 'GET':
         all_places = storage.all('Place')
-        city_places = [obj.to_dict() for obj in all_places.values()
-                       if obj.city_id == city_id]
-        return jsonify(city_places)
+        place_List = []
+        for val in all_places.values():
+            if val.city_id == city_id:
+                place_List.append(val.to_dict())
+        return jsonify(place_List)
 
     if request.method == 'POST':
         req_json = request.get_json()
