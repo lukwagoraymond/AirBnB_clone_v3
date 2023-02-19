@@ -151,7 +151,7 @@ EOF  all  create  destroy  help  quit  show  update
 ```
 
 ## Bugs
-No known bugs at this time. 
+One bug with places\_reviews.py File on GET /api/v1/reviews/:review\_id - existing Review. 
 
 ## Authors
 Alexa Orrico - [Github](https://github.com/alexaorrico) / [Twitter](https://twitter.com/alexa_orrico)  
@@ -161,6 +161,5 @@ Second part of Airbnb: Joann Vuong
 
 Third part of Airbnb:
 Raymond Lukwago - [Github](https://github.com/lukwagoraymond) / [Twitter](https://twitter.com/lukwagoraymond)
-Jeff Omondi - [Github](https://github.com/kojeffi) / [Twitter](https://twitter.com/kojeffi)
 ## License
 Public Domain. No copy write protection. 
