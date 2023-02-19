@@ -5,9 +5,7 @@ Flask route that returns json status response
 from api.v1.views import app_views
 from flask import abort, jsonify, request, make_response
 from models import storage
-from os import environ
 from models.place import Place
-STORAGE_TYPE = environ.get('HBNB_TYPE_STORAGE')
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET', 'POST'],
